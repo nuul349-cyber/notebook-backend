@@ -12,7 +12,14 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-app.use(requestLogger)
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({error:'malformed id'})
+  }
+  next(error)
+}
 
 app.use(express.static('dist'))
 app.use(express.json())
