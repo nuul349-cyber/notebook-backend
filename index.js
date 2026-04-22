@@ -23,8 +23,7 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(express.static('dist'))
 app.use(express.json())
-
-let notes = []
+app.use(requestLogger)
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -95,6 +94,13 @@ app.post('/api/notes', (request, response) => {
 
     note.save().then(savedNote => response.json(savedNote))
 })
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
