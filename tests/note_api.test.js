@@ -68,10 +68,6 @@ test('note without content is not added', async () => {
   assert.strictEqual(notesAtEnd.length, helper.initialNotes.length)
 })
 
-after(async () => {
-  await mongoose.connection.close()
-})
-
 test('a specific note can be viewed', async () => {
   const notesAtStart = await helper.notesInDb()
   const noteToView = notesAtStart[0]
@@ -97,4 +93,8 @@ test('a note can be deleted', async () => {
   assert(!ids.includes(noteToDelete.id))
 
   assert.strictEqual(notesAtEnd.length, helper.initialNotes.length - 1)
+})
+
+after(async () => {
+  await mongoose.connection.close()
 })
