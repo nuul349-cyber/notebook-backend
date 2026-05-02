@@ -74,7 +74,7 @@ describe('when there is initially some notes saved', () => {
   })
 
   describe('addition of a new note', () => {
-    test('succeeds with valid data ', async () => {
+    test('succeeds with valid data', async () => {
       const users = await helper.usersInDb()
       const user = users[0]
       const newNote = {
@@ -83,11 +83,15 @@ describe('when there is initially some notes saved', () => {
         userId: user.id
       }
 
-      await api
+      const result = await api
         .post('/api/notes')
         .send(newNote)
         .expect(201)
         .expect('Content-Type', /application\/json/)
+
+      const returnedNote = result.body
+      const userAtEnd = await User.findById(user.id)
+      assert(userAtEnd.notes.includes(returnedNote.id))
 
       const notesAtEnd = await helper.notesInDb()
       assert.strictEqual(notesAtEnd.length, helper.initialNotes.length + 1)
