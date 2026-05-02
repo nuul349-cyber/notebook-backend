@@ -12,9 +12,19 @@ const api = supertest(app)
 
 describe('when there is initially some notes saved', () => {
   beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+
     await Note.deleteMany({})
 
-    await Note.insertMany(helper.initialNotes)
+    for (let note of helper.initialNotes) {
+      let noteObject = new Note({ ...note, user: user._id })
+      await noteObject.save()
+    }
   })
 
   test('notes are returned as json', async () => {
@@ -65,9 +75,12 @@ describe('when there is initially some notes saved', () => {
 
   describe('addition of a new note', () => {
     test('succeeds with valid data ', async () => {
+      const users = await helper.usersInDb()
+      const user = users[0]
       const newNote = {
         content: 'async/await simplifies making async calls',
         important: true,
+        userId: user.id
       }
 
       await api

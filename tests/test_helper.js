@@ -22,7 +22,11 @@ const nonExistingId = async () => {
 
 const notesInDb = async () => {
   const notes = await Note.find({})
-  return notes.map(note => note.toJSON())
+  return notes.map(note => {
+    const formatedNote = note.toJSON()
+    formatedNote.user = formatedNote.user.toString()
+    return formatedNote
+  })
 }
 
 const usersInDb = async () => {
